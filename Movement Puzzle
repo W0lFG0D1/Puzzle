@@ -1,0 +1,98 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BottleMovement : MonoBehaviour
+{
+    //touch offset allows ball not to shake when it starts moving
+    float deltaX, deltaY;
+
+    //reference to Rigidbody2D component
+    Rigidbody2D rb;
+
+    //bottle movementnot allowed if you touches not the ballat the first time
+    bool moveAllowed = false;
+
+    //use this for initialization
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+
+        // Add bouncy materail to the bottle
+        PhysicsMaterial2D mat = new PhysicsMaterial2D();
+        mat.bounciness = 0.75f;
+        mat.friction = 0.4f;
+        GetComponent<EdgeCollider2D>().sharedMaterial = mat;
+
+    }
+    // Update is called once perframe
+    private void Update()
+    {
+        // Intitiating touch event
+        // if touch event takes place
+        if (Input.touchCount > 0)
+        {
+            // get touch to take a deal with
+            Touch touch = Input.GetTouch(0);
+
+            // obtain touch position
+            Vector2 touchPos = Camera.main.ScreenToWorldPoint(touch.position);
+
+            // processing touch phases
+            switch (touch.phase)
+            {
+                // if you touches the screen
+                case TouchPhase.Began:
+
+                    // if you touch the bottle
+                    if(GetComponent<Collider2D> () == Physics2D.OverlapPoint (touchPos))
+                    {
+                        // get the offset between position you touches
+                        // and the center of the game object
+                        deltaX = touchPos.x - transform.position.x;
+
+                        // get the offset between position you touches
+                        // processing touch phases
+                        switch (touch.phase)
+                        {
+                            //if you touches the screen
+                            case TouchPhase.Began:
+
+                                //if you touch the bottle
+                                if (GetComponent<Collider2D> () == Physics2D.oVERLPpOINT (touchPos))
+                                {
+                                    //get the offset between position you touches
+                                    // and the center of the game object
+                                    deltaX = touchPos.x - transform.position.x;
+                                    deltaY = touchPos.y - transform.position.y;
+
+                                    // if touch begins within the bottle collider
+                                    // then it is allowed to move
+                                    moveAllowed = true;
+
+                                    // restrict some rigidbody properties soit moves
+                                    //more smoothly and correctly
+                                    rb.freezeRotation = true;
+                                    rb.velocity = new Vector2(0, 0);
+                                    rb.gravityScale = 0;
+                                    GetComponent<EdgeCollider2D>().sharedMaterial = null;
+                                }
+                                break;
+
+                            // you move your finger
+                            case TouchPhase.Ended:
+
+                                // restore initial parameters
+                                //when thouch is ended
+                                moveAllowed = false;
+                                rb.freezeRotation = false;
+                                rb.gravityScale = 2;
+                                PhysicsMaterial2D mat = new PhysicsMaterial2D();
+                                mat.bounciness = 0.75f;
+                                GetComponent<EdgeCollider2D>().sharedMaterial = mat;
+                        }
+                    }
+            }
+        }
+    }
+}
